@@ -8,6 +8,7 @@
     </head>
 
     <body>
+        <!--
         <header class="mb-4">
             <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
                 <a class="navbar-brand" href="/">Tasklist</a>
@@ -24,6 +25,9 @@
                 </div>
             </nav>
         </header>
+        -->
+        
+        @include('commons.navbar')        
         
         <div class="container">
             @yield('content')
