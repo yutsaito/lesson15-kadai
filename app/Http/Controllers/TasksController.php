@@ -13,12 +13,48 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+//    public function index()
+//    {
+//        $tasks=Task::all();
+//        return view('tasks.index',['tasks'=>$tasks,]);
+//    }
+
+//    public function index()
+//    {
+//        $data = [];
+//        if (\Auth::check()) {
+//            $user = \Auth::user();
+//            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            
+//            $data = [
+//                'user' => $user,
+//                'tasks' => $tasks,
+//            ];
+//        }
+//        
+//        return view('welcome', $data);
+//    }
+
+
     public function index()
     {
-        $tasks=Task::all();
+        $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
+            //$tasks=Task::all();
+             $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);;
+            
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+        }
         
-        return view('tasks.index',['tasks'=>$tasks,]);
+        return view('welcome', $data);
     }
+
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -27,11 +63,18 @@ class TasksController extends Controller
      */
     public function create()
     {
-        $task=new Task;
-        
-        return view('tasks.create',[
-            'task'=>$task,
-            ]);
+        if(\Auth::check()){                
+            $task=new Task;
+            //if($task->user_id==\Auth::id()){                
+                return view('tasks.create',[
+                    'task'=>$task,
+                    ]);
+            }else{
+                       // return view('welcome');
+                       return redirect('/');
+            }
+       // }
+                    
     }
 
     /**
@@ -42,11 +85,19 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
+       /*
         $task = new Task;
         $task->content = $request->content;
         $task->save();
+        */
+               
+            $request->user()->tasks()->create([
+                'content' => $request->content,
+            ]);
 
+        
         return redirect('/');
+       //return back();
     }
 
     /**
@@ -57,11 +108,19 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        $task = Task::find($id);
-
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+        if(\Auth::check()){
+        
+            $task = Task::find($id);
+            
+            if($task->user_id==\Auth::id()){
+    
+                return view('tasks.show', [
+                    'task' => $task,
+                ]);
+            }else{
+                        return redirect('/');
+            }
+        }
     }
 
     /**
@@ -72,11 +131,16 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        $task = Task::find($id);
-
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        if(\Auth::check()){        
+            $task = Task::find($id);
+            if($task->user_id==\Auth::id()){    
+                return view('tasks.edit', [
+                    'task' => $task,
+                ]);
+            }else{
+                        return redirect('/');
+            }
+        }
     }
 
     /**
@@ -108,4 +172,9 @@ class TasksController extends Controller
 
         return redirect('/');
     }
+    
+//        public function __construct()
+ //   {
+//        $this->middleware('auth');
+//    }
 }
