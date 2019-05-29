@@ -6,6 +6,16 @@
  
             @if (count($tasks) >0)
                 @include('tasks.index', ['tasks' => $tasks])
+                
+	@elseif(count($tasks) ===0)
+	       {{-- {!! nl2br(e(" ")) !!} 改行できず、あとで調べること--}}
+{{--	       
+	       <div class="text-left">
+                {!! link_to_route('tasks.create', '投稿', [],['class' => 'btn btn-lg btn-primary']) !!}
+            </div>  
+--}}  
+
+                 @include('tasks.index')
             @endif
     @else
         <div class="center jumbotron">
