@@ -85,6 +85,11 @@ class TasksController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request,[
+            'content'=>'required|max:191',
+            'status'=>'required|max:10',
+            ]);        
+        
        /*
         $task = new Task;
         $task->content = $request->content;
@@ -93,8 +98,16 @@ class TasksController extends Controller
                
             $request->user()->tasks()->create([
                 'content' => $request->content,
+                'status' => $request->status,
             ]);
-
+            
+            //190531
+/*            $request->user()->tasks()->create([
+            'status' => $request->status,
+            ]);
+*/        
+        /* $message->save(); に対応する文がない、なぜだか思い出せない
+        $request->user()->tasks()->createのcreateにsave()が含まれているのか？*/
         
         return redirect('/');
        //return back();
@@ -152,10 +165,17 @@ class TasksController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request,[
+            'content'=>'required|max:191',
+            'status'=>'required|max:10',
+            ]);
         $task = Task::find($id);
-        $task->content = $request->content;
-        $task->save();
-
+        if($task->user_id==\Auth::id()){
+            $task->content = $request->content;
+            $task->status = $request->status;  //190531   
+            //$task=['content'=>$request->content, 'status'=>$request->status] ;
+            $task->save();
+        }
         return redirect('/');
     }
 
@@ -168,8 +188,9 @@ class TasksController extends Controller
     public function destroy($id)
     {
         $task = Task::find($id);
-        $task->delete();
-
+         if($task->user_id==\Auth::id()){
+            $task->delete();
+         }
         return redirect('/');
     }
     
